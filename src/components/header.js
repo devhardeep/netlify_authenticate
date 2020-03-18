@@ -1,42 +1,43 @@
-import { Link } from "gatsby"
-import PropTypes from "prop-types"
-import React from "react"
+import React, { Component } from 'react';
+import { push } from 'gatsby-link';
 
-const Header = ({ siteTitle }) => (
-  <header
-    style={{
-      background: `rebeccapurple`,
-      marginBottom: `1.45rem`,
-    }}
-  >
-    <div
-      style={{
-        margin: `0 auto`,
-        maxWidth: 960,
-        padding: `1.45rem 1.0875rem`,
-      }}
-    >
-      <h1 style={{ margin: 0 }}>
-        <Link
-          to="/"
-          style={{
-            color: `white`,
-            textDecoration: `none`,
-          }}
-        >
-          {siteTitle}
-        </Link>
-      </h1>
-    </div>
-  </header>
-)
+import auth from '../utils/auth';
 
-Header.propTypes = {
-  siteTitle: PropTypes.string,
+
+class Header extends Component {
+  constructor(props) {
+    super(props);
+
+    this.signOut = this.signOut.bind(this);
+  }
+
+  signOut() {
+    let user = auth.currentUser();
+    user.logout()
+        .then((response) => {
+          push('/');
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+  }
+
+  render() {
+    let signedIn = false;
+
+    if (auth.currentUser()) {
+      signedIn = true;
+    }
+
+    return (
+      <div>
+        { signedIn &&
+          <button onClick={() => { this.signOut() }} type='button'>Sign out</button>
+        }
+      </div>
+    );
+  }
 }
 
-Header.defaultProps = {
-  siteTitle: ``,
-}
 
-export default Header
+export default Header;
